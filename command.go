@@ -10,10 +10,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/redis/go-redis/v9/internal"
-	"github.com/redis/go-redis/v9/internal/hscan"
-	"github.com/redis/go-redis/v9/internal/proto"
-	"github.com/redis/go-redis/v9/internal/util"
+	"github.com/amattn/go-redis-wafris/v9/internal"
+	"github.com/amattn/go-redis-wafris/v9/internal/proto"
+	"github.com/amattn/go-redis-wafris/v9/internal/util"
 )
 
 type Cmder interface {
@@ -506,26 +505,6 @@ func (cmd *SliceCmd) Result() ([]interface{}, error) {
 
 func (cmd *SliceCmd) String() string {
 	return cmdString(cmd, cmd.val)
-}
-
-// Scan scans the results from the map into a destination struct. The map keys
-// are matched in the Redis struct fields by the `redis:"field"` tag.
-func (cmd *SliceCmd) Scan(dst interface{}) error {
-	if cmd.err != nil {
-		return cmd.err
-	}
-
-	// Pass the list of keys and values.
-	// Skip the first two args for: HMGET key
-	var args []interface{}
-	if cmd.args[0] == "hmget" {
-		args = cmd.args[2:]
-	} else {
-		// Otherwise, it's: MGET field field ...
-		args = cmd.args[1:]
-	}
-
-	return hscan.Scan(dst, args, cmd.val)
 }
 
 func (cmd *SliceCmd) readReply(rd *proto.Reader) (err error) {
@@ -1250,27 +1229,6 @@ func (cmd *MapStringStringCmd) Result() (map[string]string, error) {
 
 func (cmd *MapStringStringCmd) String() string {
 	return cmdString(cmd, cmd.val)
-}
-
-// Scan scans the results from the map into a destination struct. The map keys
-// are matched in the Redis struct fields by the `redis:"field"` tag.
-func (cmd *MapStringStringCmd) Scan(dest interface{}) error {
-	if cmd.err != nil {
-		return cmd.err
-	}
-
-	strct, err := hscan.Struct(dest)
-	if err != nil {
-		return err
-	}
-
-	for k, v := range cmd.val {
-		if err := strct.Scan(k, v); err != nil {
-			return err
-		}
-	}
-
-	return nil
 }
 
 func (cmd *MapStringStringCmd) readReply(rd *proto.Reader) error {

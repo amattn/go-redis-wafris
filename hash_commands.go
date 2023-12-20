@@ -15,7 +15,6 @@ type HashCmdable interface {
 	HSet(ctx context.Context, key string, values ...interface{}) *IntCmd
 	HMSet(ctx context.Context, key string, values ...interface{}) *BoolCmd
 	HSetNX(ctx context.Context, key, field string, value interface{}) *BoolCmd
-	HScan(ctx context.Context, key string, cursor uint64, match string, count int64) *ScanCmd
 	HVals(ctx context.Context, key string) *StringSliceCmd
 	HRandField(ctx context.Context, key string, count int) *StringSliceCmd
 	HRandFieldWithValues(ctx context.Context, key string, count int) *KeyValueSliceCmd
@@ -156,19 +155,6 @@ func (c cmdable) HRandField(ctx context.Context, key string, count int) *StringS
 // HRandFieldWithValues redis-server version >= 6.2.0.
 func (c cmdable) HRandFieldWithValues(ctx context.Context, key string, count int) *KeyValueSliceCmd {
 	cmd := NewKeyValueSliceCmd(ctx, "hrandfield", key, count, "withvalues")
-	_ = c(ctx, cmd)
-	return cmd
-}
-
-func (c cmdable) HScan(ctx context.Context, key string, cursor uint64, match string, count int64) *ScanCmd {
-	args := []interface{}{"hscan", key, cursor}
-	if match != "" {
-		args = append(args, "match", match)
-	}
-	if count > 0 {
-		args = append(args, "count", count)
-	}
-	cmd := NewScanCmd(ctx, c, args...)
 	_ = c(ctx, cmd)
 	return cmd
 }

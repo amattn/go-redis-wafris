@@ -6,7 +6,7 @@ import (
 	. "github.com/bsm/ginkgo/v2"
 	. "github.com/bsm/gomega"
 
-	"github.com/redis/go-redis/v9"
+	"github.com/amattn/go-redis-wafris/v9"
 )
 
 var _ = Describe("ScanIterator", func() {
@@ -28,16 +28,6 @@ var _ = Describe("ScanIterator", func() {
 		}
 		for i := 1; i <= n; i++ {
 			pipe.Set(ctx, fmt.Sprintf("K%02d", i), "x", 0).Err()
-		}
-		_, err := pipe.Exec(ctx)
-		return err
-	}
-
-	hashKey := "K_HASHTEST"
-	hashSeed := func(n int) error {
-		pipe := client.Pipeline()
-		for i := 1; i <= n; i++ {
-			pipe.HSet(ctx, hashKey, fmt.Sprintf("K%02d", i), "x").Err()
 		}
 		_, err := pipe.Exec(ctx)
 		return err
@@ -80,20 +70,6 @@ var _ = Describe("ScanIterator", func() {
 		}
 		Expect(iter.Err()).NotTo(HaveOccurred())
 		Expect(vals).To(HaveLen(71))
-		Expect(vals).To(ContainElement("K01"))
-		Expect(vals).To(ContainElement("K71"))
-	})
-
-	It("should hscan across multiple pages", func() {
-		Expect(hashSeed(71)).NotTo(HaveOccurred())
-
-		var vals []string
-		iter := client.HScan(ctx, hashKey, 0, "", 10).Iterator()
-		for iter.Next(ctx) {
-			vals = append(vals, iter.Val())
-		}
-		Expect(iter.Err()).NotTo(HaveOccurred())
-		Expect(vals).To(HaveLen(71 * 2))
 		Expect(vals).To(ContainElement("K01"))
 		Expect(vals).To(ContainElement("K71"))
 	})

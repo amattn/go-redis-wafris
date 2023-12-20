@@ -4,13 +4,12 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"strconv"
 	"strings"
 	"sync"
 	"testing"
 	"time"
 
-	"github.com/redis/go-redis/v9"
+	"github.com/amattn/go-redis-wafris/v9"
 )
 
 func benchmarkRedisClient(ctx context.Context, poolSize int) *redis.Client {
@@ -226,45 +225,6 @@ func BenchmarkZAdd(b *testing.B) {
 			err := client.ZAdd(ctx, "key", redis.Z{
 				Score:  float64(1),
 				Member: "hello",
-			}).Err()
-			if err != nil {
-				b.Fatal(err)
-			}
-		}
-	})
-}
-
-func BenchmarkXRead(b *testing.B) {
-	ctx := context.Background()
-	client := benchmarkRedisClient(ctx, 10)
-	defer client.Close()
-
-	args := redis.XAddArgs{
-		Stream: "1",
-		ID:     "*",
-		Values: map[string]string{"uno": "dos"},
-	}
-
-	lenStreams := 16
-	streams := make([]string, 0, lenStreams)
-	for i := 0; i < lenStreams; i++ {
-		streams = append(streams, strconv.Itoa(i))
-	}
-	for i := 0; i < lenStreams; i++ {
-		streams = append(streams, "0")
-	}
-
-	b.ReportAllocs()
-	b.ResetTimer()
-
-	b.RunParallel(func(pb *testing.PB) {
-		for pb.Next() {
-			client.XAdd(ctx, &args)
-
-			err := client.XRead(ctx, &redis.XReadArgs{
-				Streams: streams,
-				Count:   1,
-				Block:   time.Second,
 			}).Err()
 			if err != nil {
 				b.Fatal(err)

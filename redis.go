@@ -8,14 +8,10 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/redis/go-redis/v9/internal"
-	"github.com/redis/go-redis/v9/internal/hscan"
-	"github.com/redis/go-redis/v9/internal/pool"
-	"github.com/redis/go-redis/v9/internal/proto"
+	"github.com/amattn/go-redis-wafris/v9/internal"
+	"github.com/amattn/go-redis-wafris/v9/internal/pool"
+	"github.com/amattn/go-redis-wafris/v9/internal/proto"
 )
-
-// Scanner internal/hscan.Scanner exposed interface.
-type Scanner = hscan.Scanner
 
 // Nil reply returned by Redis when key does not exist.
 const Nil = proto.Nil

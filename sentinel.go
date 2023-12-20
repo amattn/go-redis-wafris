@@ -9,9 +9,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/redis/go-redis/v9/internal"
-	"github.com/redis/go-redis/v9/internal/pool"
-	"github.com/redis/go-redis/v9/internal/rand"
+	"github.com/amattn/go-redis-wafris/v9/internal"
+	"github.com/amattn/go-redis-wafris/v9/internal/pool"
+	"github.com/amattn/go-redis-wafris/v9/internal/rand"
 )
 
 //------------------------------------------------------------------------------

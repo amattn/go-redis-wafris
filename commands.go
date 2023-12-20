@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/redis/go-redis/v9/internal"
+	"github.com/amattn/go-redis-wafris/v9/internal"
 )
 
 // KeepTTL is a Redis KEEPTTL option to keep existing TTL, it requires your redis-server version >= 6.0,
@@ -212,21 +212,14 @@ type Cmdable interface {
 	ACLCmdable
 	BitMapCmdable
 	ClusterCmdable
-	GearsCmdable
 	GenericCmdable
-	GeoCmdable
 	HashCmdable
-	HyperLogLogCmdable
 	ListCmdable
-	ProbabilisticCmdable
 	PubSubCmdable
 	ScriptingFunctionsCmdable
 	SetCmdable
 	SortedSetCmdable
 	StringCmdable
-	StreamCmdable
-	TimeseriesCmdable
-	JSONCmdable
 }
 
 type StatefulCmdable interface {
